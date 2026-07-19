@@ -2,10 +2,183 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Website đầu tiên của mình</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Hứng Trứng</title>
+    <style>
+        body {
+            margin: 0;
+            background: #linear-gradient(to bottom, #87CEEB, #E0F6FF);
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            user-select: none;
+        }
+        #gameCanvas {
+            background: #fff;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        #scoreBoard {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        #gameOverScreen {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>Xin chào GitHub! 👋</h1>
-    <p>Đây là website đầu tiên của mình.</p>
+
+    <div id="scoreBoard">Điểm: <span id="score">0</span> | Mạng: <span id="lives">3</span></div>
+    
+    <div id="gameOverScreen">
+        <h2>HẾT LƯỢT!</h2>
+        <p>Số điểm của bạn là: <span id="finalScore">0</span></p>
+        <button onclick="resetGame()">Chơi lại</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Tự động điều chỉnh kích thước canvas phù hợp màn hình điện thoại
+        canvas.width = window.innerWidth > 450 ? 400 : window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let score = 0;
+        let lives = 3;
+        let gameActive = true;
+
+        // Cấu hình Giỏ hứng
+        const basket = {
+            width: 80,
+            height: 20,
+            x: canvas.width / 2 - 40,
+            y: canvas.height - 50,
+            color: "#8B4513"
+        };
+
+        // Cấu hình Quả trứng
+        const egg = {
+            x: Math.random() * (canvas.width - 20) + 10,
+            y: 0,
+            radius: 12,
+            speed: 4,
+            color: "#FFD700"
+        };
+
+        // Điều khiển bằng cách vuốt/chạm trên điện thoại hoặc di chuột trên máy tính
+        function moveBasket(e) {
+            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let rect = canvas.getBoundingClientRect();
+            let canvasX = clientX - rect.left;
+            basket.x = canvasX - basket.width / 2;
+            
+            // Giới hạn không cho giỏ chạy ra ngoài màn hình
+            if (basket.x < 0) basket.x = 0;
+            if (basket.x + basket.width > canvas.width) basket.x = canvas.width - basket.width;
+        }
+
+        window.addEventListener("mousemove", moveBasket);
+        window.addEventListener("touchmove", moveBasket);
+
+        function resetGame() {
+            score = 0;
+            lives = 3;
+            egg.y = 0;
+            egg.x = Math.random() * (canvas.width - 20) + 10;
+            egg.speed = 4;
+            gameActive = true;
+            document.getElementById("gameOverScreen").style.display = "none";
+            document.getElementById("score").innerText = score;
+            document.getElementById("lives").innerText = lives;
+            update();
+        }
+
+        function update() {
+            if (!gameActive) return;
+
+            // Xóa màn hình cũ để vẽ khung hình mới
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Vẽ chiếc giỏ
+            ctx.fillStyle = basket.color;
+            ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
+
+            // Di chuyển quả trứng rơi xuống
+            egg.y += egg.speed;
+
+            // Vẽ quả trứng
+            ctx.beginPath();
+            ctx.arc(egg.x, egg.y, egg.radius, 0, Math.PI * 2);
+            ctx.fillStyle = egg.color;
+            ctx.fill();
+            ctx.closePath();
+
+            // Kiểm tra va chạm (Giỏ hứng được trứng)
+            if (egg.y + egg.radius >= basket.y && 
+                egg.x >= basket.x && 
+                egg.x <= basket.x + basket.width && 
+                egg.y - egg.radius <= basket.y + basket.height) {
+                
+                score++;
+                document.getElementById("score").innerText = score;
+                // Đổi vị trí trứng lên trên và tăng nhẹ tốc độ cho khó hơn
+                egg.y = 0;
+                egg.x = Math.random() * (canvas.width - 20) + 10;
+                egg.speed += 0.3; 
+            }
+
+            // Kiểm tra trứng rơi trượt xuống đất
+            if (egg.y > canvas.height) {
+                lives--;
+                document.getElementById("lives").innerText = lives;
+                
+                if (lives <= 0) {
+                    gameActive = false;
+                    document.getElementById("finalScore").innerText = score;
+                    document.getElementById("gameOverScreen").style.display = "block";
+                } else {
+                    egg.y = 0;
+                    egg.x = Math.random() * (canvas.width - 20) + 10;
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        // Bắt đầu chạy game
+        update();
+    </script>
 </body>
 </html>
+
+
