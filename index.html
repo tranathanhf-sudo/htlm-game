@@ -1,184 +1,682 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Hứng Trứng</title>
-    <style>
-        body {
-            margin: 0;
-            background: #linear-gradient(to bottom, #87CEEB, #E0F6FF);
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            user-select: none;
-        }
-        #gameCanvas {
-            background: #fff;
-            display: block;
-            margin: 0 auto;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        #scoreBoard {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 5px 15px;
-            border-radius: 20px;
-        }
-        #gameOverScreen {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 18px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vạn Thân — Hoa tươi mọi khoảnh khắc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lacquer:#7c1f2b;
+    --lacquer-dark:#5c1520;
+    --gold:#b8903f;
+    --gold-light:#d9b876;
+    --ivory:#f7f2e6;
+    --ivory-deep:#efe6d2;
+    --ink:#2a2320;
+    --jade:#3d5945;
+    --jade-light:#5d7a63;
+    --blush:#e7c9c2;
+    --shadow: 0 12px 30px -12px rgba(42,35,32,0.35);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ivory);
+    color:var(--ink);
+    font-family:'Be Vietnam Pro', sans-serif;
+    line-height:1.6;
+  }
+  h1,h2,h3,.display{
+    font-family:'Playfair Display', serif;
+    margin:0;
+    color:var(--lacquer-dark);
+  }
+  a{color:inherit;}
+  img,svg{display:block;}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px;}
+  button{font-family:inherit;cursor:pointer;}
+
+  header.site-header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(247,242,230,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--ivory-deep);
+  }
+  .header-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 24px;max-width:1160px;margin:0 auto;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{width:40px;height:40px;flex:none;}
+  .brand-name{font-size:22px;font-weight:700;letter-spacing:0.5px;}
+  .brand-sub{font-size:11px;letter-spacing:3px;color:var(--jade);text-transform:uppercase;font-family:'Be Vietnam Pro';}
+  nav.main-nav{display:flex;gap:28px;font-size:14px;font-weight:500;}
+  nav.main-nav a{text-decoration:none;color:var(--ink);position:relative;padding-bottom:3px;}
+  nav.main-nav a:hover{color:var(--lacquer);}
+  .header-actions{display:flex;align-items:center;gap:10px;}
+  .btn{
+    border:none;border-radius:3px;padding:10px 18px;font-size:13.5px;font-weight:600;letter-spacing:0.3px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--lacquer);color:var(--ivory);}
+  .btn-primary:hover{background:var(--lacquer-dark);box-shadow:var(--shadow);}
+  .btn-outline{background:transparent;border:1px solid var(--jade);color:var(--jade);}
+  .btn-outline:hover{background:var(--jade);color:var(--ivory);}
+  .btn-gold{background:var(--gold);color:var(--ivory);}
+  .btn-gold:hover{background:#9c7530;}
+  .btn-ghost{background:none;color:var(--lacquer-dark);text-decoration:underline;font-weight:500;padding:4px 2px;}
+  .btn-danger{background:#8a2f2f;color:var(--ivory);}
+
+  @media (max-width:860px){
+    nav.main-nav{display:none;}
+  }
+
+  .hero{
+    position:relative;
+    padding:72px 24px 60px;
+    background:
+      radial-gradient(ellipse at 15% 20%, rgba(124,31,43,0.06), transparent 55%),
+      radial-gradient(ellipse at 85% 80%, rgba(61,89,69,0.07), transparent 55%);
+    overflow:hidden;
+  }
+  .hero-inner{
+    max-width:1160px;margin:0 auto;
+    display:grid;grid-template-columns:1.05fr 0.95fr;gap:56px;align-items:center;
+  }
+  @media (max-width:900px){.hero-inner{grid-template-columns:1fr;}}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);
+    font-weight:600;margin-bottom:18px;
+  }
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--gold);}
+  .hero h1{font-size:clamp(34px,5vw,54px);line-height:1.15;font-weight:600;}
+  .hero h1 em{font-style:italic;color:var(--lacquer);}
+  .hero-tagline{margin-top:18px;font-size:16.5px;color:#54453e;max-width:480px;}
+  .hero-cta{margin-top:32px;display:flex;gap:14px;flex-wrap:wrap;}
+
+  .wreath-wrap{position:relative;display:flex;align-items:center;justify-content:center;}
+  .wreath-wrap svg{width:100%;max-width:400px;height:auto;}
+
+  section{padding:70px 24px;}
+  .section-head{text-align:center;max-width:640px;margin:0 auto 44px;}
+  .section-head .eyebrow{display:inline-flex;}
+  .section-head h2{font-size:clamp(26px,3.4vw,36px);font-weight:600;}
+  .section-head p{margin-top:12px;color:#5b4c44;font-size:15px;}
+  .divider-seal{display:flex;align-items:center;justify-content:center;gap:14px;margin:6px 0 40px;}
+  .divider-seal .line{height:1px;width:64px;background:var(--gold-light);}
+  .divider-seal svg{width:34px;height:34px;}
+
+  .categories-bar{
+    display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;
+  }
+  .cat-seal{
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+    background:none;border:none;padding:8px;opacity:0.55;transition:opacity .2s, transform .2s;
+  }
+  .cat-seal.active,.cat-seal:hover{opacity:1;transform:translateY(-2px);}
+  .cat-seal .seal-circle{
+    width:74px;height:74px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid var(--lacquer);color:var(--lacquer);
+    font-family:'Playfair Display';font-weight:700;font-size:13px;text-align:center;
+    background:var(--ivory);
+  }
+  .cat-seal.active .seal-circle{background:var(--lacquer);color:var(--ivory);}
+  .cat-seal span.label{font-size:13px;font-weight:600;color:var(--ink);}
+
+  .product-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:26px;
+  }
+  .product-card{
+    background:#fffdf8;border:1px solid var(--ivory-deep);border-radius:6px;
+    overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;
+    position:relative;
+  }
+  .product-illus{
+    aspect-ratio:1/0.82;background:linear-gradient(160deg,#fbf7ee,#f1e7d3);
+    display:flex;align-items:center;justify-content:center;padding:18px;
+  }
+  .product-illus svg{width:78%;height:78%;}
+  .product-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .product-cat-tag{font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--jade);font-weight:700;}
+  .product-name{font-family:'Playfair Display';font-size:19px;font-weight:600;color:var(--ink);}
+  .product-desc{font-size:13px;color:#6b5c53;flex:1;}
+  .product-price{font-weight:700;color:var(--lacquer);font-size:15px;margin-top:4px;}
+  .product-admin-actions{display:flex;gap:8px;margin-top:10px;}
+  .product-admin-actions button{flex:1;padding:7px 0;font-size:12px;border-radius:3px;}
+  .empty-note{grid-column:1/-1;text-align:center;color:#8a7b70;font-size:14px;padding:30px 0;}
+
+  .about-inner{
+    display:grid;grid-template-columns:0.9fr 1.1fr;gap:50px;align-items:center;
+    background:var(--ivory-deep);border-radius:8px;padding:48px;
+  }
+  @media (max-width:860px){.about-inner{grid-template-columns:1fr;padding:32px;}}
+  .about-inner svg{width:100%;height:auto;max-width:320px;margin:0 auto;}
+  .about-text h2{font-size:28px;margin-bottom:14px;}
+  .about-list{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:12px;}
+  .about-list li{display:flex;gap:10px;font-size:14px;color:#4b3d36;}
+  .about-list li svg{width:18px;height:18px;flex:none;color:var(--gold);margin-top:2px;}
+
+  .poster{
+    background:linear-gradient(135deg,var(--lacquer) 0%, var(--lacquer-dark) 100%);
+    color:var(--ivory);border-radius:8px;
+    padding:56px 40px;text-align:center;position:relative;overflow:hidden;
+    margin:0 24px;
+  }
+  .poster::before,.poster::after{
+    content:"";position:absolute;width:220px;height:220px;border-radius:50%;
+    background:rgba(255,255,255,0.05);
+  }
+  .poster::before{top:-80px;left:-60px;}
+  .poster::after{bottom:-100px;right:-60px;}
+  .poster h2{color:var(--ivory);font-size:clamp(24px,3.6vw,34px);position:relative;z-index:1;}
+  .poster p{color:#f0dfd7;max-width:560px;margin:14px auto 0;position:relative;z-index:1;font-size:15px;}
+  .poster .btn{margin-top:24px;position:relative;z-index:1;}
+
+  .contact-inner{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+  @media (max-width:860px){.contact-inner{grid-template-columns:1fr;}}
+  .contact-card{background:#fffdf8;border:1px solid var(--ivory-deep);border-radius:6px;padding:28px;box-shadow:var(--shadow);}
+  .contact-row{display:flex;gap:12px;margin-bottom:16px;font-size:14px;}
+  .contact-row svg{width:20px;height:20px;flex:none;color:var(--lacquer);margin-top:2px;}
+  .map-block{
+    border-radius:6px;background:repeating-linear-gradient(45deg,#efe6d2,#efe6d2 10px,#f7f2e6 10px,#f7f2e6 20px);
+    display:flex;align-items:center;justify-content:center;color:#8a7b70;font-size:13px;min-height:260px;border:1px solid var(--ivory-deep);
+  }
+
+  footer{background:var(--ink);color:#cfc3b8;padding:36px 24px;text-align:center;font-size:13px;}
+  footer .brand-name{color:var(--ivory);}
+  footer a{text-decoration:none;color:#e3d2c4;}
+
+  .overlay{
+    position:fixed;inset:0;background:rgba(42,35,32,0.55);
+    display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    background:var(--ivory);border-radius:8px;max-width:440px;width:100%;
+    padding:32px;box-shadow:0 30px 60px rgba(0,0,0,0.3);
+  }
+  .modal h3{font-size:20px;margin-bottom:6px;}
+  .modal p.hint{font-size:12.5px;color:#8a7b70;margin:0 0 20px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:5px;color:#5b4c44;}
+  .field input,.field textarea,.field select{
+    width:100%;padding:9px 11px;border:1px solid #d9cdbe;border-radius:4px;
+    font-family:inherit;font-size:14px;background:#fffdf8;
+  }
+  .field textarea{resize:vertical;min-height:64px;}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;}
+  .error-msg{color:#8a2f2f;font-size:12.5px;margin-top:-6px;margin-bottom:10px;min-height:16px;}
+
+  .admin-bar{
+    display:none;background:var(--jade);color:var(--ivory);font-size:13px;
+    padding:10px 24px;justify-content:space-between;align-items:center;
+  }
+  .admin-bar.show{display:flex;}
+  .admin-bar strong{font-weight:700;}
+  .admin-bar .btn{padding:6px 14px;font-size:12px;}
+
+  .admin-only{display:none;}
+  body.is-admin .admin-only{display:flex;}
+  body.is-admin .add-card-btn{display:flex;}
+
+  .add-card{
+    border:2px dashed var(--gold-light);border-radius:6px;
+    display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px;
+    color:var(--gold);font-weight:600;background:none;min-height:280px;font-size:14px;
+  }
+  .add-card:hover{background:rgba(184,144,63,0.06);}
+  .add-card svg{width:30px;height:30px;}
+
+  .site-edit-btn{
+    position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.85);
+    border:1px solid var(--gold-light);border-radius:4px;padding:6px 10px;font-size:11.5px;
+    font-weight:600;color:var(--lacquer-dark);display:none;align-items:center;gap:5px;z-index:5;
+  }
+  body.is-admin .site-edit-btn{display:inline-flex;}
+  .relative{position:relative;}
+</style>
 </head>
 <body>
 
-    <div id="scoreBoard">Điểm: <span id="score">0</span> | Mạng: <span id="lives">3</span></div>
-    
-    <div id="gameOverScreen">
-        <h2>HẾT LƯỢT!</h2>
-        <p>Số điểm của bạn là: <span id="finalScore">0</span></p>
-        <button onclick="resetGame()">Chơi lại</button>
+<div class="admin-bar" id="adminBar">
+  <span>🌿 <strong>Chế độ quản trị</strong> — bạn có thể thêm và chỉnh sửa nội dung trên toàn trang.</span>
+  <button class="btn btn-outline" style="border-color:var(--ivory);color:var(--ivory);" onclick="logoutAdmin()">Đăng xuất</button>
+</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="22" stroke="#7c1f2b" stroke-width="1.5"/>
+        <g fill="#7c1f2b">
+          <ellipse cx="24" cy="16" rx="4.2" ry="7"/>
+          <ellipse cx="24" cy="16" rx="4.2" ry="7" transform="rotate(60 24 24)"/>
+          <ellipse cx="24" cy="16" rx="4.2" ry="7" transform="rotate(120 24 24)"/>
+          <ellipse cx="24" cy="16" rx="4.2" ry="7" transform="rotate(180 24 24)"/>
+          <ellipse cx="24" cy="16" rx="4.2" ry="7" transform="rotate(240 24 24)"/>
+          <ellipse cx="24" cy="16" rx="4.2" ry="7" transform="rotate(300 24 24)"/>
+        </g>
+        <circle cx="24" cy="24" r="3.6" fill="#b8903f"/>
+      </svg>
+      <div>
+        <div class="brand-name">Vạn Thân</div>
+        <div class="brand-sub">Flower House</div>
+      </div>
     </div>
+    <nav class="main-nav">
+      <a href="#san-pham">Sản phẩm</a>
+      <a href="#gioi-thieu">Giới thiệu</a>
+      <a href="#poster">Ưu đãi</a>
+      <a href="#lien-he">Liên hệ</a>
+    </nav>
+    <div class="header-actions">
+      <button class="btn btn-outline" id="loginToggle" onclick="openLogin()">Đăng nhập admin</button>
+    </div>
+  </div>
+</header>
 
-    <canvas id="gameCanvas"></canvas>
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">Từ 1998 · Sài Gòn</div>
+      <h1 id="heroSlogan">Gửi trọn tâm ý,<br><em>qua từng cánh hoa</em></h1>
+      <p class="hero-tagline" id="heroTagline">Từ vòng hoa tang lễ trang nghiêm, kệ hoa chúc mừng rực rỡ, đến hoa cưới tinh khôi — Vạn Thân đồng hành cùng mọi khoảnh khắc của gia đình Việt.</p>
+      <div class="hero-cta">
+        <a href="#san-pham" class="btn btn-primary">Xem sản phẩm</a>
+        <a href="#lien-he" class="btn btn-outline">Đặt hoa theo yêu cầu</a>
+      </div>
+    </div>
+    <div class="wreath-wrap">
+      <svg viewBox="0 0 400 400" fill="none">
+        <circle cx="200" cy="200" r="150" stroke="#b8903f" stroke-width="1" stroke-dasharray="2 6"/>
+        <g id="wreathFlowers"></g>
+        <circle cx="200" cy="200" r="92" fill="#fffdf8" stroke="#e7c9c2" stroke-width="1.5"/>
+        <text x="200" y="192" text-anchor="middle" font-family="Playfair Display" font-size="15" font-style="italic" fill="#7c1f2b">Vạn Thân</text>
+        <text x="200" y="214" text-anchor="middle" font-family="Be Vietnam Pro" font-size="10" letter-spacing="2" fill="#3d5945">HOA TƯƠI MỖI NGÀY</text>
+      </svg>
+    </div>
+  </div>
+</section>
 
-    <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
+<section id="san-pham">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Sản phẩm</div>
+      <h2>Ba dòng hoa truyền thống</h2>
+      <p>Mỗi dịp một tâm tình — chọn danh mục để xem các mẫu hoa được nghệ nhân của Vạn Thân tuyển chọn và cắm tay.</p>
+    </div>
+    <div class="categories-bar" id="categoriesBar"></div>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+</section>
 
-        // Tự động điều chỉnh kích thước canvas phù hợp màn hình điện thoại
-        canvas.width = window.innerWidth > 450 ? 400 : window.innerWidth;
-        canvas.height = window.innerHeight;
+<section id="gioi-thieu">
+  <div class="wrap">
+    <div class="about-inner relative">
+      <button class="site-edit-btn" onclick="openSiteEdit()">✎ Sửa nội dung</button>
+      <svg viewBox="0 0 300 300" fill="none">
+        <rect x="20" y="20" width="260" height="260" rx="8" fill="#fffdf8" stroke="#e0d2bd"/>
+        <path d="M150 60 C 110 90, 90 140, 150 240 C 210 140, 190 90, 150 60 Z" fill="#5d7a63" opacity="0.85"/>
+        <circle cx="150" cy="110" r="26" fill="#e7c9c2"/>
+        <circle cx="150" cy="110" r="10" fill="#b8903f"/>
+        <path d="M60 250 Q150 270 240 250" stroke="#b8903f" stroke-width="2" fill="none"/>
+      </svg>
+      <div class="about-text">
+        <div class="eyebrow">Câu chuyện Vạn Thân</div>
+        <h2 id="aboutTitle">Tiệm hoa của ba thế hệ</h2>
+        <p id="aboutBody">Vạn Thân khởi nguồn từ một sạp hoa nhỏ ở chợ Bến Thành, giữ nghề cắm hoa truyền thống suốt hơn hai mươi năm qua. Hoa tươi được nhập trực tiếp từ Đà Lạt mỗi sáng sớm, kết theo lối tay truyền thống — từ vòng hoa tang lễ trang nghiêm đến kệ hoa khai trương rực rỡ.</p>
+        <ul class="about-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg> Hoa nhập tươi mỗi ngày từ Đà Lạt</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg> Nghệ nhân cắm hoa theo lối truyền thống ba miền</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg> Giao hoa trong ngày, phục vụ cả lễ, tết, giỗ chạp</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg> Tư vấn chọn hoa theo phong tục và tuổi gia chủ</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
-        let score = 0;
-        let lives = 3;
-        let gameActive = true;
+<section id="poster">
+  <div class="poster relative">
+    <button class="site-edit-btn" style="background:rgba(255,255,255,0.15);color:#fff;border-color:rgba(255,255,255,0.4);" onclick="openSiteEdit()">✎ Sửa nội dung</button>
+    <div class="eyebrow" style="color:#e9c9a8;">Ưu đãi tháng này</div>
+    <h2 id="posterTitle">Đặt kệ hoa chúc mừng — tặng thiệp thư pháp miễn phí</h2>
+    <p id="posterBody">Áp dụng cho mọi đơn hoa khai trương và chúc mừng được đặt trước 24 giờ. Liên hệ Zalo để được nghệ nhân tư vấn mẫu hoa phù hợp.</p>
+    <a href="#lien-he" class="btn btn-gold">Liên hệ đặt hoa ngay</a>
+  </div>
+</section>
 
-        // Cấu hình Giỏ hứng
-        const basket = {
-            width: 80,
-            height: 20,
-            x: canvas.width / 2 - 40,
-            y: canvas.height - 50,
-            color: "#8B4513"
-        };
+<section id="lien-he">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Liên hệ</div>
+      <h2>Ghé thăm hoặc đặt hoa từ xa</h2>
+    </div>
+    <div class="contact-inner">
+      <div class="contact-card relative">
+        <button class="site-edit-btn" onclick="openSiteEdit()">✎ Sửa nội dung</button>
+        <div class="contact-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-7.5 7-12a7 7 0 10-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <span id="contactAddress">45 Trần Hưng Đạo, Quận 1, TP. Hồ Chí Minh</span>
+        </div>
+        <div class="contact-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.95.36 1.88.68 2.78a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.32 1.83.55 2.78.68A2 2 0 0122 16.92z"/></svg>
+          <span id="contactPhone">0909 123 456 (gọi hoặc Zalo)</span>
+        </div>
+        <div class="contact-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span id="contactHours">6:00 – 21:00, mở cửa cả cuối tuần và ngày lễ</span>
+        </div>
+        <div class="contact-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+          <span id="contactEmail">hoa.vanthan@gmail.com</span>
+        </div>
+      </div>
+      <div class="map-block">Bản đồ cửa hàng (minh hoạ)</div>
+    </div>
+  </div>
+</section>
 
-        // Cấu hình Quả trứng
-        const egg = {
-            x: Math.random() * (canvas.width - 20) + 10,
-            y: 0,
-            radius: 12,
-            speed: 4,
-            color: "#FFD700"
-        };
+<footer>
+  <div><span class="brand-name" style="font-family:'Playfair Display';font-size:16px;">Vạn Thân</span> — Hoa tươi mọi khoảnh khắc</div>
+  <div style="margin-top:8px;">© 2026 Vạn Thân Flower House. Giữ trọn nét hoa truyền thống Việt.</div>
+</footer>
 
-        // Điều khiển bằng cách vuốt/chạm trên điện thoại hoặc di chuột trên máy tính
-        function moveBasket(e) {
-            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            let rect = canvas.getBoundingClientRect();
-            let canvasX = clientX - rect.left;
-            basket.x = canvasX - basket.width / 2;
-            
-            // Giới hạn không cho giỏ chạy ra ngoài màn hình
-            if (basket.x < 0) basket.x = 0;
-            if (basket.x + basket.width > canvas.width) basket.x = canvas.width - basket.width;
-        }
+<div class="overlay" id="loginOverlay">
+  <div class="modal">
+    <h3>Đăng nhập quản trị</h3>
+    <p class="hint">Dành cho chủ tiệm — chỉnh sửa sản phẩm, danh mục và nội dung trang.</p>
+    <div class="field">
+      <label>Tài khoản</label>
+      <input type="text" id="loginUser" placeholder="admin">
+    </div>
+    <div class="field">
+      <label>Mật khẩu</label>
+      <input type="password" id="loginPass" placeholder="••••••••">
+    </div>
+    <div class="error-msg" id="loginError"></div>
+    <p class="hint" style="margin:-6px 0 0;">Demo: tài khoản <strong>admin</strong> / mật khẩu <strong>vanthan2026</strong></p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeLogin()">Huỷ</button>
+      <button class="btn btn-primary" onclick="attemptLogin()">Đăng nhập</button>
+    </div>
+  </div>
+</div>
 
-        window.addEventListener("mousemove", moveBasket);
-        window.addEventListener("touchmove", moveBasket);
+<div class="overlay" id="productOverlay">
+  <div class="modal">
+    <h3 id="productModalTitle">Thêm sản phẩm</h3>
+    <p class="hint">Điền thông tin sản phẩm để hiển thị trên trang.</p>
+    <div class="field">
+      <label>Tên sản phẩm</label>
+      <input type="text" id="pName" placeholder="Vd: Kệ hoa chúc mừng khai trương">
+    </div>
+    <div class="field">
+      <label>Danh mục</label>
+      <select id="pCategory">
+        <option value="funeral">Hoa tang lễ</option>
+        <option value="wedding">Hoa cưới</option>
+        <option value="congrats">Hoa chúc mừng</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Giá (VNĐ)</label>
+      <input type="text" id="pPrice" placeholder="Vd: 850,000đ">
+    </div>
+    <div class="field">
+      <label>Mô tả ngắn</label>
+      <textarea id="pDesc" placeholder="Vd: Hoa cúc trắng và lay ơn, tông trang nghiêm"></textarea>
+    </div>
+    <div class="error-msg" id="productError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeProductModal()">Huỷ</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Lưu sản phẩm</button>
+    </div>
+  </div>
+</div>
 
-        function resetGame() {
-            score = 0;
-            lives = 3;
-            egg.y = 0;
-            egg.x = Math.random() * (canvas.width - 20) + 10;
-            egg.speed = 4;
-            gameActive = true;
-            document.getElementById("gameOverScreen").style.display = "none";
-            document.getElementById("score").innerText = score;
-            document.getElementById("lives").innerText = lives;
-            update();
-        }
+<div class="overlay" id="siteOverlay">
+  <div class="modal" style="max-width:520px;">
+    <h3>Sửa nội dung trang</h3>
+    <p class="hint">Chỉnh slogan, ưu đãi và thông tin liên hệ hiển thị trên trang.</p>
+    <div class="field"><label>Slogan (trang chủ)</label><input type="text" id="editSlogan"></div>
+    <div class="field"><label>Câu giới thiệu ngắn</label><textarea id="editTagline"></textarea></div>
+    <div class="field"><label>Tiêu đề ưu đãi (poster)</label><input type="text" id="editPosterTitle"></div>
+    <div class="field"><label>Nội dung ưu đãi</label><textarea id="editPosterBody"></textarea></div>
+    <div class="field"><label>Địa chỉ</label><input type="text" id="editAddress"></div>
+    <div class="field"><label>Điện thoại / Zalo</label><input type="text" id="editPhone"></div>
+    <div class="field"><label>Giờ mở cửa</label><input type="text" id="editHours"></div>
+    <div class="field"><label>Email</label><input type="text" id="editEmail"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeSiteEdit()">Huỷ</button>
+      <button class="btn btn-primary" onclick="saveSiteEdit()">Lưu thay đổi</button>
+    </div>
+  </div>
+</div>
 
-        function update() {
-            if (!gameActive) return;
+<script>
+function flowerIcon(accent, seed){
+  const petals = [];
+  for(let i=0;i<6;i++){
+    petals.push(`<ellipse cx="60" cy="34" rx="13" ry="24" fill="${accent}" opacity="0.9" transform="rotate(${i*60} 60 60)"/>`);
+  }
+  return `<svg viewBox="0 0 120 120" fill="none">
+    <path d="M60 70 C40 90 30 105 20 118" stroke="#5d7a63" stroke-width="4" fill="none"/>
+    <path d="M60 70 C80 92 90 104 100 118" stroke="#5d7a63" stroke-width="4" fill="none"/>
+    <path d="M60 70 L60 118" stroke="#5d7a63" stroke-width="4"/>
+    ${petals.join('')}
+    <circle cx="60" cy="60" r="12" fill="#b8903f"/>
+  </svg>`;
+}
+const categoryAccent = {funeral:'#e7e2d8', wedding:'#e7c9c2', congrats:'#e3b356'};
 
-            // Xóa màn hình cũ để vẽ khung hình mới
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+(function buildWreathRing(){
+  const g = document.getElementById('wreathFlowers');
+  const colors = ['#e7c9c2','#b8903f','#5d7a63','#7c1f2b'];
+  let html='';
+  for(let i=0;i<10;i++){
+    const angle = (i/10)*360;
+    const c = colors[i%colors.length];
+    html += `<g transform="rotate(${angle} 200 200)"><circle cx="200" cy="52" r="9" fill="${c}"/></g>`;
+  }
+  g.innerHTML = html;
+})();
 
-            // Vẽ chiếc giỏ
-            ctx.fillStyle = basket.color;
-            ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
+let isAdmin = false;
+let activeCategory = 'wedding';
+let editingProductId = null;
 
-            // Di chuyển quả trứng rơi xuống
-            egg.y += egg.speed;
+let siteContent = {
+  tagline: "Từ vòng hoa tang lễ trang nghiêm, kệ hoa chúc mừng rực rỡ, đến hoa cưới tinh khôi — Vạn Thân đồng hành cùng mọi khoảnh khắc của gia đình Việt.",
+  posterTitle: "Đặt kệ hoa chúc mừng — tặng thiệp thư pháp miễn phí",
+  posterBody: "Áp dụng cho mọi đơn hoa khai trương và chúc mừng được đặt trước 24 giờ. Liên hệ Zalo để được nghệ nhân tư vấn mẫu hoa phù hợp.",
+  address: "45 Trần Hưng Đạo, Quận 1, TP. Hồ Chí Minh",
+  phone: "0909 123 456 (gọi hoặc Zalo)",
+  hours: "6:00 – 21:00, mở cửa cả cuối tuần và ngày lễ",
+  email: "hoa.vanthan@gmail.com"
+};
 
-            // Vẽ quả trứng
-            ctx.beginPath();
-            ctx.arc(egg.x, egg.y, egg.radius, 0, Math.PI * 2);
-            ctx.fillStyle = egg.color;
-            ctx.fill();
-            ctx.closePath();
+let products = [
+  {id:1, category:'funeral', name:'Vòng hoa tang lễ trắng', price:'1,200,000đ', desc:'Cúc trắng, lay ơn và lá dương xỉ, tông trang nghiêm thanh khiết.'},
+  {id:2, category:'funeral', name:'Kệ hoa tang lễ hai tầng', price:'1,850,000đ', desc:'Kết hợp cúc, huệ tây và lá bàng bạc, phù hợp không gian tang lễ trang trọng.'},
+  {id:3, category:'wedding', name:'Hoa cưới cầm tay hồng phấn', price:'950,000đ', desc:'Hồng phấn, baby trắng và lá bạc hà, phong cách tân cổ điển.'},
+  {id:4, category:'wedding', name:'Cổng hoa cưới sen hồng', price:'3,200,000đ', desc:'Sen hồng, lan hồ điệp và lá cau cảnh cho không gian tiệc cưới miền Nam.'},
+  {id:5, category:'wedding', name:'Xe hoa cưới truyền thống', price:'2,600,000đ', desc:'Hoa hồng đỏ và hoa ly trắng trang trí xe hoa theo lối truyền thống.'},
+  {id:6, category:'congrats', name:'Kệ hoa khai trương phát tài', price:'1,450,000đ', desc:'Hoa lay ơn vàng và dải lụa đỏ, cầu chúc khai trương phát đạt.'},
+  {id:7, category:'congrats', name:'Giỏ hoa chúc mừng tân gia', price:'890,000đ', desc:'Hướng dương, cát tường và lá nguyệt quế, tượng trưng cho khởi đầu mới.'},
+  {id:8, category:'congrats', name:'Kệ hoa chúc mừng thăng chức', price:'1,650,000đ', desc:'Lan hồ điệp vàng kết hợp thiệp thư pháp chúc mừng.'}
+];
+let nextId = 9;
 
-            // Kiểm tra va chạm (Giỏ hứng được trứng)
-            if (egg.y + egg.radius >= basket.y && 
-                egg.x >= basket.x && 
-                egg.x <= basket.x + basket.width && 
-                egg.y - egg.radius <= basket.y + basket.height) {
-                
-                score++;
-                document.getElementById("score").innerText = score;
-                // Đổi vị trí trứng lên trên và tăng nhẹ tốc độ cho khó hơn
-                egg.y = 0;
-                egg.x = Math.random() * (canvas.width - 20) + 10;
-                egg.speed += 0.3; 
-            }
+const categoryLabels = {
+  funeral: {short:'Tang lễ', full:'Hoa tang lễ'},
+  wedding: {short:'Hoa cưới', full:'Hoa cưới'},
+  congrats:{short:'Chúc mừng', full:'Hoa chúc mừng'}
+};
 
-            // Kiểm tra trứng rơi trượt xuống đất
-            if (egg.y > canvas.height) {
-                lives--;
-                document.getElementById("lives").innerText = lives;
-                
-                if (lives <= 0) {
-                    gameActive = false;
-                    document.getElementById("finalScore").innerText = score;
-                    document.getElementById("gameOverScreen").style.display = "block";
-                } else {
-                    egg.y = 0;
-                    egg.x = Math.random() * (canvas.width - 20) + 10;
-                }
-            }
+function renderCategories(){
+  const bar = document.getElementById('categoriesBar');
+  bar.innerHTML = Object.keys(categoryLabels).map(key => `
+    <button class="cat-seal ${activeCategory===key?'active':''}" onclick="setCategory('${key}')">
+      <span class="seal-circle">${categoryLabels[key].short}</span>
+      <span class="label">${categoryLabels[key].full}</span>
+    </button>
+  `).join('');
+}
+function setCategory(key){ activeCategory = key; renderCategories(); renderProducts(); }
 
-            requestAnimationFrame(update);
-        }
+function renderProducts(){
+  const grid = document.getElementById('productGrid');
+  const list = products.filter(p => p.category === activeCategory);
+  let html = list.map(p => `
+    <div class="product-card">
+      <div class="product-illus">${flowerIcon(categoryAccent[p.category], p.id)}</div>
+      <div class="product-body">
+        <div class="product-cat-tag">${categoryLabels[p.category].full}</div>
+        <div class="product-name">${escapeHtml(p.name)}</div>
+        <div class="product-desc">${escapeHtml(p.desc)}</div>
+        <div class="product-price">${escapeHtml(p.price)}</div>
+        <div class="product-admin-actions admin-only">
+          <button class="btn btn-outline" onclick="openEditProduct(${p.id})">Sửa</button>
+          <button class="btn btn-danger" onclick="deleteProduct(${p.id})">Xoá</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
 
-        // Bắt đầu chạy game
-        update();
-    </script>
+  if(list.length === 0){
+    html += `<div class="empty-note">Chưa có sản phẩm trong danh mục này.</div>`;
+  }
+
+  html += `<button class="add-card add-card-btn" onclick="openAddProduct()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Thêm sản phẩm mới
+    </button>`;
+
+  grid.innerHTML = html;
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div'); d.innerText = str; return d.innerHTML;
+}
+
+function openLogin(){ document.getElementById('loginOverlay').classList.add('show'); document.getElementById('loginError').textContent=''; }
+function closeLogin(){ document.getElementById('loginOverlay').classList.remove('show'); }
+function attemptLogin(){
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value.trim();
+  if(u === 'admin' && p === 'vanthan2026'){
+    isAdmin = true;
+    document.body.classList.add('is-admin');
+    document.getElementById('adminBar').classList.add('show');
+    document.getElementById('loginToggle').style.display = 'none';
+    closeLogin();
+    renderProducts();
+  } else {
+    document.getElementById('loginError').textContent = 'Sai tài khoản hoặc mật khẩu. Vui lòng thử lại.';
+  }
+}
+function logoutAdmin(){
+  isAdmin = false;
+  document.body.classList.remove('is-admin');
+  document.getElementById('adminBar').classList.remove('show');
+  document.getElementById('loginToggle').style.display = 'inline-flex';
+  renderProducts();
+}
+
+function openAddProduct(){
+  editingProductId = null;
+  document.getElementById('productModalTitle').textContent = 'Thêm sản phẩm';
+  document.getElementById('pName').value = '';
+  document.getElementById('pCategory').value = activeCategory;
+  document.getElementById('pPrice').value = '';
+  document.getElementById('pDesc').value = '';
+  document.getElementById('productError').textContent = '';
+  document.getElementById('productOverlay').classList.add('show');
+}
+function openEditProduct(id){
+  const p = products.find(x => x.id === id);
+  if(!p) return;
+  editingProductId = id;
+  document.getElementById('productModalTitle').textContent = 'Sửa sản phẩm';
+  document.getElementById('pName').value = p.name;
+  document.getElementById('pCategory').value = p.category;
+  document.getElementById('pPrice').value = p.price;
+  document.getElementById('pDesc').value = p.desc;
+  document.getElementById('productError').textContent = '';
+  document.getElementById('productOverlay').classList.add('show');
+}
+function closeProductModal(){ document.getElementById('productOverlay').classList.remove('show'); }
+function saveProduct(){
+  const name = document.getElementById('pName').value.trim();
+  const category = document.getElementById('pCategory').value;
+  const price = document.getElementById('pPrice').value.trim();
+  const desc = document.getElementById('pDesc').value.trim();
+  if(!name || !price){
+    document.getElementById('productError').textContent = 'Vui lòng nhập tên và giá sản phẩm.';
+    return;
+  }
+  if(editingProductId){
+    const p = products.find(x => x.id === editingProductId);
+    Object.assign(p, {name, category, price, desc});
+  } else {
+    products.push({id: nextId++, category, name, price, desc});
+  }
+  closeProductModal();
+  activeCategory = category;
+  renderCategories();
+  renderProducts();
+}
+function deleteProduct(id){
+  if(!confirm('Xoá sản phẩm này khỏi trang?')) return;
+  products = products.filter(p => p.id !== id);
+  renderProducts();
+}
+
+function openSiteEdit(){
+  document.getElementById('editSlogan').value = document.getElementById('heroSlogan').innerText;
+  document.getElementById('editTagline').value = siteContent.tagline;
+  document.getElementById('editPosterTitle').value = siteContent.posterTitle;
+  document.getElementById('editPosterBody').value = siteContent.posterBody;
+  document.getElementById('editAddress').value = siteContent.address;
+  document.getElementById('editPhone').value = siteContent.phone;
+  document.getElementById('editHours').value = siteContent.hours;
+  document.getElementById('editEmail').value = siteContent.email;
+  document.getElementById('siteOverlay').classList.add('show');
+}
+function closeSiteEdit(){ document.getElementById('siteOverlay').classList.remove('show'); }
+function saveSiteEdit(){
+  document.getElementById('heroSlogan').innerText = document.getElementById('editSlogan').value;
+  siteContent.tagline = document.getElementById('editTagline').value;
+  siteContent.posterTitle = document.getElementById('editPosterTitle').value;
+  siteContent.posterBody = document.getElementById('editPosterBody').value;
+  siteContent.address = document.getElementById('editAddress').value;
+  siteContent.phone = document.getElementById('editPhone').value;
+  siteContent.hours = document.getElementById('editHours').value;
+  siteContent.email = document.getElementById('editEmail').value;
+
+  document.getElementById('heroTagline').textContent = siteContent.tagline;
+  document.getElementById('posterTitle').textContent = siteContent.posterTitle;
+  document.getElementById('posterBody').textContent = siteContent.posterBody;
+  document.getElementById('contactAddress').textContent = siteContent.address;
+  document.getElementById('contactPhone').textContent = siteContent.phone;
+  document.getElementById('contactHours').textContent = siteContent.hours;
+  document.getElementById('contactEmail').textContent = siteContent.email;
+
+  closeSiteEdit();
+}
+
+renderCategories();
+renderProducts();
+</script>
 </body>
 </html>
+
 
 
